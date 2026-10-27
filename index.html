@@ -158,7 +158,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .topbar nav { display: flex; gap: 22px; align-items: center; }
 .topbar nav a.navlink { text-decoration: none; color: var(--muted); font-size: .92rem; }
 .topbar nav a.navlink:hover { color: var(--fg); }
-.topbar .btn { padding: 10px 16px; font-size: .92rem; box-shadow: none; }
+.topbar .btn { padding: 10px 16px; font-size: .92rem; box-shadow: none; white-space: nowrap; }
+.brand-name, .mobile-buy .btn, .mobile-buy .info { white-space: nowrap; }
 @media (max-width: 760px) { .topbar nav a.navlink { display: none; } }
 
 /* ---------- hero ---------- */

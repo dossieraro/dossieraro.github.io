@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="O guia e o est&uacute;dio do Dossi&ecirc; Raro para criar v&iacute;deos 3D narrados com Claude e ElevenLabs, sem aparecer, sem editar e sem programar.">
+<meta name="theme-color" content="#0C1214">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Dossi&ecirc; Raro &middot; O M&eacute;todo">
+<meta property="og:description" content="V&iacute;deos 3D narrados, verticais e prontos para postar. Sem mostrar o rosto, sem editar e sem programar.">
+<meta property="og:locale" content="pt_BR">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23E6DBC0'/%3E%3Ctext x='16' y='21' font-family='Arial' font-weight='900' font-size='13' text-anchor='middle' fill='%231E1A12'%3EDR%3C/text%3E%3C/svg%3E">
+<title>Dossiê Raro · O Método</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: uma pasta de investigação aberta — faixas escuras de arquivo, fichas cor de papel pardo e um único marca-texto ciano onde o olho deve ir. */
+:root {
+  --ink: #0C1214;
+  --surface: #131B1E;
+  --surface-2: #19242818;
+  --line: #24323A;
+  --fg: #E6ECEA;
+  --muted: #8FA1A5;
+  --accent: #3DEBFF;
+  --accent-fg: #061A1D;
+  --accent-text: #3DEBFF;
+  --paper: #E6DBC0;
+  --paper-ink: #1E1A12;
+  --paper-line: #C9BB98;
+  --stamp: #C9483C;
+  --ok: #6FBF8E;
+
+  --f-display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --step--1: clamp(.8rem, .78rem + .1vw, .86rem);
+  --step-0: clamp(1rem, .96rem + .2vw, 1.09rem);
+  --step-1: clamp(1.2rem, 1.1rem + .45vw, 1.4rem);
+  --step-2: clamp(1.5rem, 1.3rem + 1vw, 2.1rem);
+  --step-3: clamp(2rem, 1.5rem + 2.4vw, 3.4rem);
+  --step-4: clamp(2.5rem, 1.6rem + 4.2vw, 5rem);
+
+  --wrap: 1120px;
+  --radius: 6px;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --ink: #EDF0EF; --surface: #FFFFFF; --surface-2: #E3E8E7; --line: #CDD6D6;
+    --fg: #0F1719; --muted: #536569; --accent: #3DDCF0; --accent-fg: #061A1D; --accent-text: #0A7F90;
+    --paper: #E9DFC5; --paper-ink: #1E1A12; --paper-line: #CDBF9C; --stamp: #B23A2F; --ok: #2E8A55;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --ink: #EDF0EF; --surface: #FFFFFF; --surface-2: #E3E8E7; --line: #CDD6D6;
+  --fg: #0F1719; --muted: #536569; --accent: #3DDCF0; --accent-fg: #061A1D; --accent-text: #0A7F90;
+  --paper: #E9DFC5; --paper-ink: #1E1A12; --paper-line: #CDBF9C; --stamp: #B23A2F; --ok: #2E8A55;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+img { max-width: 100%; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--ink);
+  color: var(--fg);
+  font-family: var(--f-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+
+.wrap {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 720px) {
+  .wrap { padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); }
+}
+section { padding-block: clamp(64px, 9vw, 120px); }
+section + section { border-top: 1px solid var(--line); }
+
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.02; }
+h2 { font-size: var(--step-3); font-weight: 800; font-stretch: 78%; letter-spacing: -.01em; }
+h3 { font-size: var(--step-1); font-weight: 700; font-stretch: 90%; line-height: 1.2; }
+p { margin: 0; }
+
+.label {
+  font-family: var(--f-mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mark {
+  background: linear-gradient(transparent 58%, var(--accent) 58%, var(--accent) 92%, transparent 92%);
+  color: inherit;
+  padding-inline: .06em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.sec-head { display: grid; gap: 18px; max-width: 760px; margin-bottom: clamp(36px, 5vw, 56px); }
+.sec-head p.lede { color: var(--muted); font-size: var(--step-1); line-height: 1.5; max-width: 62ch; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  background: var(--accent); color: var(--accent-fg);
+  font-family: var(--f-display); font-weight: 800; font-stretch: 90%;
+  font-size: 1.08rem; letter-spacing: .01em;
+  text-decoration: none;
+  padding: 18px 26px; border-radius: var(--radius);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 60%, black), 0 10px 30px -12px color-mix(in srgb, var(--accent) 70%, transparent);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn .price { font-family: var(--f-mono); font-weight: 600; font-size: .92rem; padding-left: 12px; border-left: 1px solid color-mix(in srgb, var(--accent-fg) 30%, transparent); }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--fg); text-decoration: none; font-weight: 600;
+  border-bottom: 1px solid var(--line); padding-bottom: 2px;
+}
+.btn-ghost:hover { border-color: var(--accent-text); }
+
+/* ---------- topo ---------- */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 21; background: var(--ink); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-mark {
+  width: 30px; height: 30px; border-radius: 4px;
+  background: var(--paper); color: var(--paper-ink);
+  display: grid; place-items: center;
+  font-family: var(--f-display); font-weight: 900; font-size: .82rem; font-stretch: 70%;
+  position: relative;
+}
+.brand-mark::after { content: ""; position: absolute; top: -3px; left: 4px; width: 12px; height: 4px; background: var(--paper); border-radius: 2px 2px 0 0; }
+.brand-name { font-family: var(--f-display); font-weight: 800; font-stretch: 80%; font-size: 1.15rem; letter-spacing: .01em; }
+.topbar nav { display: flex; gap: 22px; align-items: center; }
+.topbar nav a.navlink { text-decoration: none; color: var(--muted); font-size: .92rem; }
+.topbar nav a.navlink:hover { color: var(--fg); }
+.topbar .btn { padding: 10px 16px; font-size: .92rem; box-shadow: none; }
+@media (max-width: 760px) { .topbar nav a.navlink { display: none; } }
+
+/* ---------- hero ---------- */
+.hero { padding-block: clamp(40px, 7vw, 96px) clamp(56px, 8vw, 110px); position: relative; overflow: hidden; }
+.hero::before {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: .35;
+  mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, black, transparent);
+  pointer-events: none;
+}
+.hero .wrap { position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+.hero-copy { display: grid; gap: 26px; min-width: 0; }
+.file-no { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.file-no .stamp {
+  font-family: var(--f-mono); font-size: .74rem; font-weight: 600; letter-spacing: .16em;
+  color: var(--stamp); border: 1.5px solid var(--stamp); padding: 3px 9px; border-radius: 3px;
+  transform: rotate(-2deg);
+}
+.hero h1 { font-size: var(--step-4); font-weight: 900; font-stretch: 72%; letter-spacing: -.015em; line-height: .96; }
+.hero h1 .sub { display: block; font-weight: 500; font-stretch: 100%; font-size: .5em; letter-spacing: -.005em; line-height: 1.15; margin-top: .45em; color: var(--muted); }
+.hero .subhead { font-size: var(--step-1); line-height: 1.5; color: var(--fg); max-width: 56ch; opacity: .9; }
+.hero-cta { display: grid; gap: 14px; justify-items: start; }
+.trust { display: flex; flex-wrap: wrap; gap: 8px 20px; font-family: var(--f-mono); font-size: .78rem; color: var(--muted); letter-spacing: .04em; }
+.trust span { display: inline-flex; align-items: center; gap: 7px; }
+.trust span::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
+
+/* celular com cena 3D */
+.evidence { position: relative; justify-self: center; width: min(320px, 100%); }
+.phone {
+  aspect-ratio: 9 / 19; width: 100%; max-width: 100%;
+  border-radius: 34px; padding: 10px;
+  background: #050809;
+  box-shadow: 0 0 0 1px var(--line), 0 40px 80px -30px rgba(0,0,0,.7);
+  position: relative;
+}
+.screen {
+  position: relative; width: 100%; height: 100%; border-radius: 26px; overflow: hidden;
+  background: radial-gradient(120% 70% at 50% 35%, #1D2C33 0%, #0B1215 70%);
+  color: #E6ECEA;
+}
+.screen .pill {
+  position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+  font-family: var(--f-mono); font-size: .62rem; letter-spacing: .14em; white-space: nowrap;
+  background: rgba(230,219,192,.92); color: #1E1A12; padding: 5px 10px; border-radius: 99px; font-weight: 600;
+}
+.stage { position: absolute; left: 0; right: 0; top: 22%; height: 40%; perspective: 700px; display: grid; place-items: center; }
+.floor {
+  position: absolute; bottom: -10%; left: 50%; width: 150%; height: 60%;
+  transform: translateX(-50%) rotateX(72deg);
+  background: radial-gradient(circle at 50% 50%, rgba(61,235,255,.18), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 1px, transparent 1px 26px);
+}
+.cube { width: 86px; height: 86px; position: relative; transform-style: preserve-3d; animation: spin 14s linear infinite; }
+.cube div { position: absolute; inset: 0; border: 1px solid rgba(255,255,255,.18); }
+.cube .f1 { transform: translateZ(43px); background: #2B3D45; }
+.cube .f2 { transform: rotateY(180deg) translateZ(43px); background: #22323A; }
+.cube .f3 { transform: rotateY(90deg) translateZ(43px); background: #3DEBFF; }
+.cube .f4 { transform: rotateY(-90deg) translateZ(43px); background: #31464F; }
+.cube .f5 { transform: rotateX(90deg) translateZ(43px); background: #3B535D; }
+.cube .f6 { transform: rotateX(-90deg) translateZ(43px); background: #1A272D; }
+@keyframes spin { from { transform: rotateX(-22deg) rotateY(0deg); } to { transform: rotateX(-22deg) rotateY(360deg); } }
+.orb { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #D9E4E6, #5B7178); }
+.orb.a { left: 18%; top: 30%; animation: bob 4s ease-in-out infinite; }
+.orb.b { right: 16%; top: 55%; width: 14px; height: 14px; animation: bob 5s ease-in-out infinite reverse; }
+@keyframes bob { 50% { transform: translateY(-10px); } }
+.tag {
+  position: absolute; font-family: var(--f-mono); font-size: .6rem; letter-spacing: .08em;
+  background: rgba(11,18,21,.85); border: 1px solid rgba(255,255,255,.16); color: #E6ECEA;
+  padding: 4px 8px; border-radius: 4px; white-space: nowrap;
+}
+.tag.t1 { top: 17%; left: 8%; }
+.tag.t2 { top: 63%; right: 8%; }
+.tag b { color: #3DEBFF; font-weight: 600; }
+.caption {
+  position: absolute; left: 10%; right: 10%; bottom: 17%;
+  font-family: var(--f-display); font-weight: 800; font-stretch: 85%; font-size: 1.05rem; line-height: 1.2; text-align: center;
+}
+.caption em { font-style: normal; color: #17110A; background: #3DEBFF; padding: 0 4px; border-radius: 3px; }
+.progress { position: absolute; left: 10%; right: 10%; bottom: 9%; height: 3px; background: rgba(255,255,255,.15); border-radius: 2px; overflow: hidden; }
+.progress::after { content: ""; display: block; height: 100%; width: 38%; background: #3DEBFF; }
+.slip {
+  position: absolute; background: var(--paper); color: var(--paper-ink);
+  font-family: var(--f-mono); font-size: .7rem; line-height: 1.45;
+  padding: 10px 12px; border-radius: 3px;
+  box-shadow: 0 14px 30px -14px rgba(0,0,0,.6);
+}
+.slip strong { display: block; font-size: .62rem; letter-spacing: .14em; color: var(--stamp); margin-bottom: 2px; }
+.slip.s1 { left: -18%; top: 14%; transform: rotate(-4deg); }
+.slip.s2 { right: -16%; bottom: 20%; transform: rotate(3deg); }
+@media (max-width: 860px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); }
+  .evidence { width: min(270px, 74vw); margin-top: 8px; }
+  .slip.s1 { left: -14%; }
+  .slip.s2 { right: -12%; }
+}
+
+/* faixa */
+.strip { border-block: 1px solid var(--line); background: var(--surface); }
+.strip .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px 28px; padding-block: 18px; }
+.strip span { font-family: var(--f-mono); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.strip span b { color: var(--fg); font-weight: 600; }
+
+/* o caso */
+.case-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.suspect {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 26px; display: grid; gap: 12px; align-content: start; min-width: 0;
+}
+.suspect .label { color: var(--stamp); }
+.suspect p { color: var(--muted); }
+.verdict {
+  margin-top: 28px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: center;
+  background: var(--paper); color: var(--paper-ink); border-radius: var(--radius); padding: 24px 28px;
+}
+.verdict .label { color: var(--stamp); }
+.verdict p { font-size: var(--step-1); font-family: var(--f-display); font-weight: 700; font-stretch: 90%; line-height: 1.3; }
+@media (max-width: 820px) { .case-grid { grid-template-columns: minmax(0, 1fr); } .verdict { grid-template-columns: minmax(0, 1fr); gap: 8px; } }
+
+/* pistas */
+.clues { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.clue { background: var(--ink); padding: clamp(24px, 3.5vw, 40px); display: grid; gap: 14px; align-content: start; min-width: 0; }
+.clue .label b { color: var(--accent-text); font-weight: 600; }
+.clue p { color: var(--muted); }
+.clue .ex { font-family: var(--f-mono); font-size: .84rem; color: var(--fg); border-left: 2px solid var(--line); padding-left: 12px; }
+@media (max-width: 720px) { .clues { grid-template-columns: minmax(0, 1fr); } }
+
+/* processo */
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 0; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 0; right: 0; top: 15px; height: 1px; background: var(--line); }
+.step { position: relative; padding-right: 12px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.dot { width: 31px; height: 31px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-mono); font-size: .74rem; font-weight: 600; background: var(--surface); border: 1px solid var(--line); color: var(--muted); position: relative; }
+.step.you .dot { background: var(--accent); color: var(--accent-fg); border-color: var(--accent-text); }
+.step h3 { font-size: 1rem; }
+.step p { color: var(--muted); font-size: .88rem; line-height: 1.45; }
+.who { font-family: var(--f-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.step.you .who { color: var(--accent-text); }
+@media (max-width: 1000px) {
+  .timeline { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .timeline::before { left: 15px; right: auto; top: 8px; bottom: 8px; width: 1px; height: auto; }
+  .step { grid-template-columns: 31px minmax(0, 1fr); column-gap: 16px; row-gap: 4px; padding-right: 0; }
+  .step .dot { grid-row: span 3; }
+}
+.legend { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 34px; font-size: .9rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; border: 1px solid var(--line); background: var(--surface); }
+.legend i.y { background: var(--accent); border-color: var(--accent-text); }
+
+.chat { margin-top: 44px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.chat > div { padding: 24px 26px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.chat .you-say { background: var(--surface); font-family: var(--f-mono); font-size: .95rem; }
+.chat .you-say .prompt::before { content: "› "; color: var(--accent-text); }
+.chat .it-does p { color: var(--muted); }
+@media (max-width: 720px) { .chat { grid-template-columns: minmax(0, 1fr); } }
+
+/* entregáveis */
+.kit { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.folder {
+  background: var(--paper); color: var(--paper-ink); border-radius: 4px 4px var(--radius) var(--radius);
+  padding: 28px 26px 26px; position: relative; display: grid; gap: 10px; align-content: start; margin-top: 14px; min-width: 0;
+}
+.folder::before { content: attr(data-tab); position: absolute; top: -22px; left: 0; background: var(--paper); padding: 4px 14px 2px; border-radius: 4px 4px 0 0; font-family: var(--f-mono); font-size: .7rem; font-weight: 600; letter-spacing: .14em; color: var(--stamp); }
+.folder h3 { font-size: var(--step-1); }
+.folder p { color: color-mix(in srgb, var(--paper-ink) 78%, var(--paper)); }
+.folder ul { margin: 6px 0 0; padding-left: 18px; color: color-mix(in srgb, var(--paper-ink) 85%, var(--paper)); font-size: .95rem; }
+.folder li + li { margin-top: 4px; }
+@media (max-width: 760px) { .kit { grid-template-columns: minmax(0, 1fr); } }
+
+.bonus-head { margin-top: 72px; margin-bottom: 26px; display: grid; gap: 12px; }
+.bonus { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.bonus article { border: 1px dashed var(--line); border-radius: var(--radius); padding: 22px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.bonus .label { color: var(--accent-text); }
+.bonus p { color: var(--muted); font-size: .95rem; }
+@media (max-width: 860px) { .bonus { grid-template-columns: minmax(0, 1fr); } }
+
+/* público */
+.who-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.profile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.profile p { color: var(--muted); }
+.profile .label { color: var(--fg); }
+.not-for { margin-top: 26px; padding: 22px 26px; border: 1px solid var(--line); border-radius: var(--radius); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: start; }
+.not-for .label { color: var(--stamp); padding-top: 3px; }
+.not-for ul { margin: 0; padding-left: 18px; color: var(--muted); display: grid; gap: 6px; }
+@media (max-width: 820px) { .who-grid { grid-template-columns: minmax(0, 1fr); } .not-for { grid-template-columns: minmax(0, 1fr); gap: 10px; } }
+
+/* custos */
+.tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.tool { padding: 28px 26px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.tool + .tool { border-left: 1px solid var(--line); }
+.tool p { color: var(--muted); font-size: .95rem; }
+.tool .cost { margin-top: 8px; font-family: var(--f-mono); font-size: .9rem; font-variant-numeric: tabular-nums; color: var(--fg); }
+.tool .cost small { display: block; color: var(--muted); font-size: .76rem; }
+.fine { margin-top: 14px; font-size: .82rem; color: var(--muted); max-width: 80ch; }
+@media (max-width: 820px) { .tools { grid-template-columns: minmax(0, 1fr); } .tool + .tool { border-left: 0; border-top: 1px solid var(--line); } }
+
+/* objeções */
+.objections { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 40px; }
+.obj { display: grid; gap: 8px; padding-block: 18px; border-top: 1px solid var(--line); min-width: 0; }
+.obj h3 { font-size: 1.15rem; }
+.obj h3::before { content: "“"; color: var(--accent-text); margin-right: 2px; }
+.obj h3::after { content: "”"; color: var(--accent-text); }
+.obj p { color: var(--muted); }
+@media (max-width: 760px) { .objections { grid-template-columns: minmax(0, 1fr); } }
+
+/* provas */
+.proof { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 28px; align-items: start; }
+.reels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.reel { aspect-ratio: 9 / 16; max-width: 100%; border-radius: 12px; background: radial-gradient(120% 70% at 50% 35%, #1D2C33, #0B1215); border: 1px solid var(--line); position: relative; overflow: hidden; color: #E6ECEA; }
+.reel .shape { position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%); }
+.reel .r1 { width: 44%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #D9E4E6, #4A5F66); }
+.reel .r2 { width: 40%; aspect-ratio: 1; background: #3DEBFF; transform: translate(-50%, -50%) rotate(45deg); }
+.reel .r3 { width: 56%; height: 22%; display: flex; align-items: flex-end; gap: 8%; }
+.reel .r3 i { flex: 1; background: #3B535D; }
+.reel .r3 i:nth-child(1) { height: 40%; } .reel .r3 i:nth-child(2) { height: 70%; } .reel .r3 i:nth-child(3) { height: 100%; background: #3DEBFF; }
+.reel span { position: absolute; left: 8%; right: 8%; bottom: 10%; font-family: var(--f-display); font-weight: 800; font-stretch: 85%; font-size: clamp(.68rem, 1.6vw, .9rem); line-height: 1.15; }
+.reel .views { position: absolute; top: 8px; left: 8px; font-family: var(--f-mono); font-size: .6rem; background: rgba(11,18,21,.8); padding: 2px 6px; border-radius: 3px; }
+.slots { display: grid; gap: 14px; }
+.slot { border: 1.5px dashed var(--line); border-radius: var(--radius); padding: 20px 22px; display: grid; gap: 8px; }
+.slot .label { color: var(--accent-text); }
+.slot p { color: var(--muted); font-size: .95rem; }
+.metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.metric { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; min-width: 0; }
+.metric b { display: block; font-family: var(--f-display); font-weight: 800; font-stretch: 80%; font-size: var(--step-2); line-height: 1; font-variant-numeric: tabular-nums; }
+.metric span { font-size: .82rem; color: var(--muted); }
+@media (max-width: 860px) { .proof { grid-template-columns: minmax(0, 1fr); } }
+
+/* oferta */
+.offer-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); align-items: center; }
+.ticket {
+  background: var(--paper); color: var(--paper-ink); border-radius: var(--radius);
+  padding: clamp(26px, 4vw, 40px); position: relative; display: grid; gap: 20px;
+  box-shadow: 0 30px 60px -30px rgba(0,0,0,.6);
+}
+.ticket .stamp-big {
+  position: absolute; top: 22px; right: 22px; transform: rotate(8deg);
+  font-family: var(--f-mono); font-weight: 600; font-size: .7rem; letter-spacing: .16em;
+  color: var(--stamp); border: 2px solid var(--stamp); padding: 4px 8px; border-radius: 3px; opacity: .85;
+}
+.ticket h3 { font-size: var(--step-2); font-stretch: 78%; font-weight: 900; padding-right: 90px; }
+.ticket ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ticket li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; align-items: start; border-bottom: 1px dotted var(--paper-line); padding-bottom: 10px; }
+.ticket li::before { content: "✓"; font-weight: 700; color: var(--paper-ink); }
+.ticket li em { font-style: normal; font-family: var(--f-mono); font-size: .7rem; letter-spacing: .1em; color: var(--stamp); margin-left: 6px; }
+.price-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.price-row .big { font-family: var(--f-display); font-weight: 900; font-stretch: 75%; font-size: clamp(3rem, 2rem + 4vw, 4.6rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.price-row .small { font-family: var(--f-mono); font-size: .82rem; }
+.ticket .btn { width: 100%; }
+.ticket .pay { font-family: var(--f-mono); font-size: .76rem; text-align: center; color: color-mix(in srgb, var(--paper-ink) 70%, var(--paper)); }
+.offer-copy { display: grid; gap: 22px; }
+.offer-copy p { color: var(--muted); font-size: var(--step-1); line-height: 1.5; }
+.guarantee { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 20px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+.seal {
+  width: 96px; height: 96px; border-radius: 50%; border: 2px solid var(--accent-text);
+  display: grid; place-items: center; text-align: center; font-family: var(--f-mono); font-size: .62rem; letter-spacing: .12em; color: var(--accent-text); line-height: 1.2;
+  outline: 1px dashed var(--accent-text); outline-offset: -8px;
+}
+.seal b { display: block; font-family: var(--f-display); font-size: 2rem; font-stretch: 75%; letter-spacing: 0; line-height: 1; }
+.guarantee p { font-size: .98rem; color: var(--fg); line-height: 1.5; }
+@media (max-width: 860px) { .offer-wrap { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 420px) { .guarantee { grid-template-columns: minmax(0, 1fr); justify-items: start; } }
+
+/* faq */
+.faq { display: grid; gap: 0; max-width: 820px; }
+.faq details { border-top: 1px solid var(--line); }
+.faq details:last-child { border-bottom: 1px solid var(--line); }
+.faq summary {
+  list-style: none; cursor: pointer; padding: 20px 40px 20px 0; position: relative;
+  font-family: var(--f-display); font-weight: 700; font-stretch: 92%; font-size: 1.12rem; line-height: 1.3;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; position: absolute; right: 4px; top: 16px; font-family: var(--f-mono); font-size: 1.4rem; color: var(--accent-text); transition: transform .2s; }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq details p { padding: 0 0 22px; color: var(--muted); max-width: 68ch; }
+.contact { margin-top: 26px; color: var(--muted); }
+.contact code { font-family: var(--f-mono); color: var(--fg); user-select: all; }
+
+/* final */
+.final { text-align: left; }
+.final .wrap { display: grid; gap: 28px; justify-items: start; }
+.final h2 { font-size: var(--step-4); font-stretch: 70%; font-weight: 900; max-width: 14ch; }
+.terminal {
+  font-family: var(--f-mono); font-size: clamp(.9rem, .8rem + .5vw, 1.15rem);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px 22px; width: min(640px, 100%); overflow-x: auto; white-space: nowrap;
+}
+.terminal .p { color: var(--accent-text); }
+.terminal .caret { display: inline-block; width: .55em; height: 1.1em; vertical-align: -.18em; background: var(--accent); animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+footer { border-top: 1px solid var(--line); padding-block: 36px calc(36px + 76px); color: var(--muted); font-size: .85rem; }
+footer .wrap { display: grid; gap: 10px; }
+@media (min-width: 761px) { footer { padding-bottom: 36px; } }
+
+/* barra de compra no celular */
+.mobile-buy {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: color-mix(in srgb, var(--ink) 92%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line);
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  display: none; align-items: center; gap: 14px;
+}
+.mobile-buy .info { display: grid; line-height: 1.2; min-width: 0; }
+.mobile-buy .info b { font-family: var(--f-display); font-stretch: 80%; font-size: 1.2rem; }
+.mobile-buy .info span { font-family: var(--f-mono); font-size: .68rem; color: var(--muted); letter-spacing: .06em; }
+.mobile-buy .btn { flex: 1; padding: 14px 16px; font-size: 1rem; box-shadow: none; }
+@media (max-width: 760px) { .mobile-buy { display: flex; } }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#topo" aria-label="Dossiê Raro, voltar ao topo">
+      <span class="brand-mark">DR</span>
+      <span class="brand-name">Dossiê Raro</span>
+    </a>
+    <nav aria-label="Seções">
+      <a class="navlink" href="#como-funciona">Como funciona</a>
+      <a class="navlink" href="#o-que-recebe">O que você recebe</a>
+      <a class="navlink" href="#perguntas">Perguntas</a>
+      <a class="btn" href="#oferta">Quero o dossiê</a>
+    </nav>
+  </div>
+</header>
+
+<main id="topo">
+
+  <!-- 1. HERO -->
+  <section class="hero" aria-labelledby="h-hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <div class="file-no">
+          <span class="label">Arquivo nº 001 · Guia + Estúdio</span>
+          <span class="stamp">ACESSO LIBERADO</span>
+        </div>
+        <h1 id="h-hero">Vídeos 3D que fazem o feed <span class="mark">parar para entender.</span>
+          <span class="sub">Narrados, verticais e prontos para postar. Sem mostrar o rosto, sem editar e sem programar.</span>
+        </h1>
+        <p class="subhead">O método completo por trás dos vídeos do Dossiê Raro: você escolhe o assunto, conduz a conversa com o Claude, gera a voz no ElevenLabs e recebe um MP4 de um minuto com cenas 3D, legenda sincronizada e efeitos sonoros.</p>
+        <div class="hero-cta">
+          <a class="btn" href="#oferta">Quero abrir o dossiê <span class="price">R$ 47,90</span></a>
+          <div class="trust">
+            <span>Pagamento único</span>
+            <span>Acesso imediato</span>
+            <span>7 dias de garantia</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="evidence" aria-hidden="true">
+        <div class="phone">
+          <div class="screen">
+            <div class="pill">DOSSIÊ RARO · EP. 07</div>
+            <div class="tag t1">pista <b>01</b> · 00:04</div>
+            <div class="stage">
+              <div class="floor"></div>
+              <div class="cube"><div class="f1"></div><div class="f2"></div><div class="f3"></div><div class="f4"></div><div class="f5"></div><div class="f6"></div></div>
+              <div class="orb a"></div><div class="orb b"></div>
+            </div>
+            <div class="tag t2">escala <b>1 : 10⁶</b></div>
+            <div class="caption">Ninguém percebe, mas isso acontece <em>todo dia</em></div>
+            <div class="progress"></div>
+          </div>
+        </div>
+        <div class="slip s1"><strong>ROTEIRO</strong>aprovado · 152 palavras</div>
+        <div class="slip s2"><strong>SAÍDA</strong>MP4 · 1080×1920 · 1:01</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. FAIXA DE FATOS -->
+  <div class="strip">
+    <div class="wrap">
+      <span><b>~1 min</b> por vídeo</span>
+      <span><b>3D</b> com narração</span>
+      <span><b>0</b> aparições na câmera</span>
+      <span><b>0</b> linhas de código suas</span>
+      <span><b>3</b> aprovações e pronto</span>
+    </div>
+  </div>
+
+  <!-- 3. O CASO (problema) -->
+  <section aria-labelledby="h-caso">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">O caso</span>
+        <h2 id="h-caso">Você quer criar conteúdo. Três coisas sempre atrapalham.</h2>
+        <p class="lede">Quase todo mundo que desiste de produzir vídeo trava nos mesmos três pontos. O método foi montado para tirar cada um deles do caminho.</p>
+      </div>
+      <div class="case-grid">
+        <article class="suspect">
+          <span class="label">Suspeito 01</span>
+          <h3>A câmera</h3>
+          <p>Você não quer aparecer, não gosta da própria voz gravada ou simplesmente não tem um canto bom para filmar.</p>
+        </article>
+        <article class="suspect">
+          <span class="label">Suspeito 02</span>
+          <h3>A edição</h3>
+          <p>Cortar, legendar, sincronizar e animar consome horas. Programa de 3D parece coisa de estúdio grande.</p>
+        </article>
+        <article class="suspect">
+          <span class="label">Suspeito 03</span>
+          <h3>A pauta</h3>
+          <p>Você posta três vezes e a ideia acaba. O vídeo sai genérico, igual a outros cem no feed, e ninguém salva.</p>
+        </article>
+      </div>
+      <div class="verdict">
+        <span class="label">Conclusão</span>
+        <p>Com o Dossiê Raro você escolhe e aprova. O Claude escreve, anima e monta, a ElevenLabs narra, e a pauta vem de um banco de assuntos que despertam curiosidade.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. AS PISTAS (por que funciona) -->
+  <section aria-labelledby="h-pistas">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Por que funciona</span>
+        <h2 id="h-pistas">O 3D faz a pessoa olhar. São quatro pistas que fazem ela ficar.</h2>
+        <p class="lede">Cada roteiro e cada cena do Dossiê Raro segue as mesmas quatro pistas. O guia ensina todas, e o estúdio já vem configurado para aplicar cada uma.</p>
+      </div>
+      <div class="clues">
+        <article class="clue">
+          <span class="label">Pista <b>A</b> · Gancho</span>
+          <h3>Os primeiros 2 segundos trazem uma pergunta que incomoda</h3>
+          <p>O vídeo abre com um fato que parece impossível. O Claude propõe vários ganchos por tema, você escolhe o mais forte, e o resto do roteiro existe para responder a ele.</p>
+          <p class="ex">“O som mais alto já registrado deu a volta na Terra quatro vezes.”</p>
+        </article>
+        <article class="clue">
+          <span class="label">Pista <b>B</b> · Imagem</span>
+          <h3>Todo dado vira algo que dá para ver</h3>
+          <p>Porcentagem vira pilha, distância vira trajeto, tempo vira relógio. Quem assiste sem som também entende, e é assim que a maioria assiste.</p>
+        </article>
+        <article class="clue">
+          <span class="label">Pista <b>C</b> · Sincronia</span>
+          <h3>Cada objeto entra no segundo em que é dito</h3>
+          <p>O estúdio mede quando cada palavra é falada e faz a cena, a legenda e o efeito sonoro entrarem juntos. Esse ritmo segura a pessoa até o fim.</p>
+        </article>
+        <article class="clue">
+          <span class="label">Pista <b>D</b> · Assinatura</span>
+          <h3>Uma série que o feed reconhece de longe</h3>
+          <p>Mesmo palco, mesma luz e uma cor de destaque só. Em poucos vídeos o seu perfil ganha uma cara própria, com as suas cores e o nome da sua série.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. COMO FUNCIONA -->
+  <section id="como-funciona" aria-labelledby="h-processo">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Como funciona</span>
+        <h2 id="h-processo">Você conduz a investigação. O Claude faz a produção.</h2>
+        <p class="lede">São nove etapas, sempre na mesma ordem, e você só precisa decidir em três delas. Você fala em português normal, e nada avança sem o seu “pode seguir”.</p>
+      </div>
+      <ol class="timeline">
+        <li class="step you"><span class="dot">1</span><span class="who">Você</span><h3>Pauta</h3><p>Diz o assunto em uma frase.</p></li>
+        <li class="step you"><span class="dot">2</span><span class="who">Você aprova</span><h3>Roteiro</h3><p>Gancho, explicação, virada e convite para seguir.</p></li>
+        <li class="step"><span class="dot">3</span><span class="who">ElevenLabs</span><h3>Voz</h3><p>Narração com voz de estúdio, sempre a mesma.</p></li>
+        <li class="step"><span class="dot">4</span><span class="who">Automático</span><h3>Sincronia</h3><p>O tempo de cada palavra é medido.</p></li>
+        <li class="step you"><span class="dot">5</span><span class="who">Você aprova</span><h3>Plano de cenas</h3><p>O que aparece em cada trecho da fala.</p></li>
+        <li class="step"><span class="dot">6</span><span class="who">Claude</span><h3>Cenas 3D</h3><p>Programa, ilumina e põe os efeitos sonoros.</p></li>
+        <li class="step you"><span class="dot">7</span><span class="who">Você aprova</span><h3>Revisão</h3><p>Quadros soltos para pedir ajustes antes do render.</p></li>
+        <li class="step"><span class="dot">8</span><span class="who">Automático</span><h3>Render</h3><p>MP4 vertical com o volume conferido.</p></li>
+        <li class="step"><span class="dot">9</span><span class="who">Claude</span><h3>Capa e legenda</h3><p>Capa, texto do post e hashtags.</p></li>
+      </ol>
+      <div class="legend">
+        <span><i class="y"></i> Você decide</span>
+        <span><i></i> Acontece sem você</span>
+      </div>
+
+      <div class="chat">
+        <div class="you-say">
+          <span class="label">O que você digita</span>
+          <p class="prompt">Quero um vídeo novo sobre por que o mar é salgado e os rios não.</p>
+        </div>
+        <div class="it-does">
+          <span class="label">O que volta</span>
+          <p>O Claude pesquisa, separa os fatos que pouca gente conhece, propõe ganchos e entrega um roteiro de um minuto para você aprovar. Depois disso, a produção começa.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. O QUE VOCÊ RECEBE + BÔNUS -->
+  <section id="o-que-recebe" aria-labelledby="h-recebe">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">O que você recebe</span>
+        <h2 id="h-recebe">Você não recebe aulas para assistir. Recebe um estúdio para usar hoje.</h2>
+      </div>
+      <div class="kit">
+        <article class="folder" data-tab="PDF">
+          <h3>Guia Dossiê Raro</h3>
+          <p>O passo a passo completo, do zero ao primeiro vídeo publicado.</p>
+          <ul>
+            <li>Instalação guiada, com prints, no Windows e no Mac</li>
+            <li>O que você escreve e o que o Claude faz em cada etapa</li>
+            <li>Como escolher e manter uma voz em português no ElevenLabs</li>
+            <li>Como revisar, postar e ler as métricas</li>
+          </ul>
+        </article>
+        <article class="folder" data-tab="PROJETO">
+          <h3>Estúdio Dossiê Raro</h3>
+          <p>A pasta que você abre no Claude e que vira uma produtora.</p>
+          <ul>
+            <li>As instruções do diretor e uma receita para cada etapa</li>
+            <li>Biblioteca 3D com palco, câmera, luzes e peças prontas</li>
+            <li>Legenda que acende na palavra falada</li>
+            <li>Efeitos sonoros e trilha, já mixados</li>
+          </ul>
+        </article>
+        <article class="folder" data-tab="MODELO">
+          <h3>Um episódio completo, aberto</h3>
+          <p>Um vídeo pronto do Dossiê Raro com roteiro, plano de cenas, código e MP4. Ele serve de referência de qualidade para você e para o Claude.</p>
+        </article>
+        <article class="folder" data-tab="IDENTIDADE">
+          <h3>A sua série, com a sua cara</h3>
+          <p>Um passo guiado para definir nome da série, cores, cenário e voz. O estúdio aplica tudo sozinho a cada vídeo novo.</p>
+        </article>
+      </div>
+
+      <div class="bonus-head">
+        <span class="label">Bônus de lançamento</span>
+        <h3 style="font-size: var(--step-2); font-stretch: 80%; font-weight: 800;">Dois arquivos extras para você não travar depois do primeiro vídeo</h3>
+      </div>
+      <div class="bonus">
+        <article>
+          <span class="label">Bônus 1</span>
+          <h3>Arquivo de 60 pautas raras</h3>
+          <p>Assuntos testados em ciência, história, corpo humano, dinheiro e tecnologia, cada um com o gancho sugerido.</p>
+        </article>
+        <article>
+          <span class="label">Bônus 2</span>
+          <h3>Manual do gancho</h3>
+          <p>Doze estruturas de abertura que despertam curiosidade, com exemplos e quando usar cada uma.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. PARA QUEM É -->
+  <section aria-labelledby="h-quem">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Para quem é</span>
+        <h2 id="h-quem">Feito para quem quer publicar sem aparecer.</h2>
+      </div>
+      <div class="who-grid">
+        <article class="profile">
+          <span class="label">Perfil principal</span>
+          <h3>Quem está começando</h3>
+          <p>Você tem entre 18 e 40 anos, quer criar um perfil que cresça, ou uma renda com vídeo, e não quer mostrar o rosto. O método te dá formato, ritmo e frequência desde o primeiro post.</p>
+        </article>
+        <article class="profile">
+          <span class="label">Também serve</span>
+          <h3>Social medias e freelancers</h3>
+          <p>Um formato que pouca gente oferece e que você pode vender como serviço. Você produz para vários clientes, cada um com a própria série e as próprias cores.</p>
+        </article>
+        <article class="profile">
+          <span class="label">Também serve</span>
+          <h3>Pequenos negócios</h3>
+          <p>Mostre como o seu produto funciona, por que o seu serviço custa o que custa ou uma regra que o cliente nunca entendeu. As pessoas salvam e mandam para os amigos.</p>
+        </article>
+      </div>
+      <div class="not-for">
+        <span class="label">Não é para você se</span>
+        <ul>
+          <li>Você procura um botão que faz tudo sozinho. Você aprova roteiro, cenas e revisão.</li>
+          <li>Você não quer assinar o Claude e o ElevenLabs, que são as ferramentas do método.</li>
+          <li>Você quer garantia de visualizações ou de faturamento. Nenhum método honesto promete isso.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. CUSTOS REAIS -->
+  <section aria-labelledby="h-custos">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">As ferramentas</span>
+        <h2 id="h-custos">Três ferramentas, com o custo real de cada uma.</h2>
+        <p class="lede">Você não precisa de programa de edição caro nem de placa de vídeo. O guia mostra como configurar cada ferramenta e quanto você vai gastar.</p>
+      </div>
+      <div class="tools">
+        <article class="tool">
+          <span class="label">Anthropic</span>
+          <h3>Claude</h3>
+          <p>É o diretor e o programador. No aplicativo do Claude, na aba Code, você abre a pasta do estúdio e conversa.</p>
+          <p class="cost">a partir de US$ 20/mês<small>plano Pro ou superior</small></p>
+        </article>
+        <article class="tool">
+          <span class="label">ElevenLabs</span>
+          <h3>ElevenLabs</h3>
+          <p>É a voz do seu perfil. A narração soa como gravada em estúdio, e você usa sempre a mesma voz em todos os vídeos.</p>
+          <p class="cost">a partir de US$ 5/mês<small>plano Starter, com uso comercial</small></p>
+        </article>
+        <article class="tool">
+          <span class="label">Seu computador</span>
+          <h3>O estúdio</h3>
+          <p>A animação e o render rodam no seu computador, com ferramentas gratuitas e de código aberto. Não há assinatura.</p>
+          <p class="cost">R$ 0<small>Windows ou Mac com 8 GB de RAM</small></p>
+        </article>
+      </div>
+      <p class="fine">Valores de referência das ferramentas em outubro de 2026, sujeitos a mudança. O Dossiê Raro não é afiliado à Anthropic nem à ElevenLabs.</p>
+    </div>
+  </section>
+
+  <!-- 9. OBJEÇÕES -->
+  <section aria-labelledby="h-objecoes">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Interrogatório</span>
+        <h2 id="h-objecoes">As dúvidas que todo mundo tem antes de começar.</h2>
+      </div>
+      <div class="objections">
+        <div class="obj">
+          <h3>Eu nunca programei nada.</h3>
+          <p>Você não vai programar. Você escreve em português e o Claude escreve o código. O guia mostra cada clique da instalação, que leva cerca de 15 minutos.</p>
+        </div>
+        <div class="obj">
+          <h3>Vai ficar com cara de vídeo de IA.</h3>
+          <p>Cada vídeo segue a direção do estúdio: uma ideia por cena, um destaque de cor, câmera lenta e som no tempo certo. O resultado parece uma série, não um gerador automático.</p>
+        </div>
+        <div class="obj">
+          <h3>Não tenho tempo.</h3>
+          <p>Você participa de três aprovações rápidas. O resto roda enquanto você faz outra coisa, e o render acontece em segundo plano.</p>
+        </div>
+        <div class="obj">
+          <h3>Não sei sobre o que falar.</h3>
+          <p>O bônus traz 60 pautas com gancho pronto. E qualquer curiosidade que você tenha, o Claude pesquisa e transforma em roteiro.</p>
+        </div>
+        <div class="obj">
+          <h3>Meu computador é simples.</h3>
+          <p>Um computador comum dá conta. O render pode demorar um pouco mais em máquinas modestas, mas o vídeo sai igual.</p>
+        </div>
+        <div class="obj">
+          <h3>Isso dá dinheiro mesmo?</h3>
+          <p>O método te dá um formato forte e uma rotina de produção. Crescer depende de constância e de pauta. E, como os vídeos podem ser usados em perfis de clientes, dá para vender a produção como serviço.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. OFERTA + GARANTIA -->
+  <section id="oferta" aria-labelledby="h-oferta">
+    <div class="wrap offer-wrap">
+      <div class="offer-copy">
+        <span class="label">A oferta</span>
+        <h2 id="h-oferta">Tudo o que o Dossiê Raro usa, em uma compra só.</h2>
+        <p>Você paga uma vez e o material é seu. Os vídeos que você criar são seus também, inclusive para usar em perfis de clientes.</p>
+        <div class="guarantee">
+          <div class="seal"><span><b>7</b>DIAS DE<br>GARANTIA</span></div>
+          <p>Se você instalar, testar e achar que não é para você, devolvemos 100% do valor em até 7 dias. Basta responder ao e-mail da compra, sem formulário e sem justificativa.</p>
+        </div>
+      </div>
+
+      <div class="ticket">
+        <span class="stamp-big">ACESSO VITALÍCIO</span>
+        <span class="label" style="color: var(--stamp);">Dossiê Raro · Versão 1</span>
+        <h3>Guia + Estúdio Dossiê Raro</h3>
+        <ul>
+          <li><span>Guia Dossiê Raro em PDF</span></li>
+          <li><span>Estúdio Dossiê Raro, a pasta pronta para o Claude</span></li>
+          <li><span>Episódio-modelo completo, com código e MP4</span></li>
+          <li><span>Passo guiado para criar a identidade da sua série</span></li>
+          <li><span>Arquivo de 60 pautas raras <em>BÔNUS</em></span></li>
+          <li><span>Manual do gancho <em>BÔNUS</em></span></li>
+          <li><span>Uso comercial dos vídeos e atualizações da versão 1</span></li>
+        </ul>
+        <div class="price-row">
+          <span class="big">R$ 47,90</span>
+          <span class="small">pagamento único<br>ou em até 10x no cartão</span>
+        </div>
+        <a class="btn checkout" href="https://pay.kiwify.com.br/jpHF4Vv">Quero meu acesso agora</a>
+        <p class="pay">Pix ou cartão · acesso liberado na hora, também por e-mail</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. FAQ -->
+  <section id="perguntas" aria-labelledby="h-faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Perguntas frequentes</span>
+        <h2 id="h-faq">Antes de fechar o caso.</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>Preciso saber programar ou editar vídeo?</summary>
+          <p>Não. Você conversa com o Claude em português. Ele escreve o código das cenas e monta o vídeo. Sua parte é escolher o tema e aprovar três etapas.</p>
+        </details>
+        <details>
+          <summary>Quanto vou gastar por mês para produzir?</summary>
+          <p>Somando o plano Pro do Claude e o plano Starter do ElevenLabs, a partir de cerca de US$ 25 por mês. O estúdio roda no seu computador sem custo.</p>
+        </details>
+        <details>
+          <summary>Que computador eu preciso?</summary>
+          <p>Windows 10 ou superior, ou macOS recente, com pelo menos 8 GB de RAM e alguns GB livres. Não precisa de placa de vídeo dedicada.</p>
+        </details>
+        <details>
+          <summary>Quanto tempo leva para fazer um vídeo?</summary>
+          <p>O primeiro leva mais, porque você está aprendendo. Depois disso, sua parte ativa fica em torno de 20 a 30 minutos por vídeo, e o resto roda sozinho.</p>
+        </details>
+        <details>
+          <summary>Posso usar nos perfis dos meus clientes?</summary>
+          <p>Sim. Os vídeos que você cria são seus para usar no seu perfil e nos perfis dos seus clientes. Você só não pode revender ou repassar o guia e o estúdio.</p>
+        </details>
+        <details>
+          <summary>Os vídeos são em português?</summary>
+          <p>Sim. Roteiro, voz e legenda saem em português do Brasil. Se você quiser outro idioma, basta pedir ao Claude e escolher uma voz nesse idioma.</p>
+        </details>
+        <details>
+          <summary>Como eu recebo o acesso?</summary>
+          <p>Logo depois do pagamento aprovado, você recebe por e-mail o link para baixar o guia e a pasta do estúdio. No Pix a liberação é imediata.</p>
+        </details>
+        <details>
+          <summary>E se eu não gostar?</summary>
+          <p>Você tem 7 dias para pedir o reembolso integral. É só responder ao e-mail da compra.</p>
+        </details>
+        <details>
+          <summary>O Dossiê Raro é ligado à Anthropic ou à ElevenLabs?</summary>
+          <p>Não. O Dossiê Raro é um produto independente que ensina a usar essas ferramentas. As assinaturas são feitas direto com cada empresa.</p>
+        </details>
+      </div>
+      <p class="contact">Ficou alguma dúvida? Escreva para <code>dossieraro@gmail.com</code></p>
+    </div>
+  </section>
+
+  <!-- 13. FECHAMENTO -->
+  <section class="final" aria-labelledby="h-final">
+    <div class="wrap">
+      <span class="label">Último arquivo</span>
+      <h2 id="h-final">Todo caso começa com uma pergunta.</h2>
+      <div class="terminal" aria-label="Exemplo de pedido ao Claude"><span class="p">›</span> Quero um vídeo novo sobre <span class="caret"></span></div>
+      <a class="btn" href="#oferta">Quero abrir o dossiê <span class="price">R$ 47,90</span></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Dossiê Raro</strong> · vídeos 3D que explicam o que ninguém te contou.</p>
+    <p>Siga <a href="https://www.instagram.com/dossieraro/" target="_blank" rel="noopener">@dossieraro</a> no Instagram · <span style="user-select: all;">dossieraro@gmail.com</span></p>
+    <p>Claude é marca da Anthropic. ElevenLabs é marca da ElevenLabs. O Dossiê Raro não tem vínculo com essas empresas. Resultados dependem de constância, pauta e execução: não há garantia de visualizações ou de faturamento.</p>
+  </div>
+</footer>
+
+<div class="mobile-buy" role="region" aria-label="Comprar">
+  <div class="info"><b>R$ 47,90</b><span>7 DIAS DE GARANTIA</span></div>
+  <a class="btn" href="#oferta">Quero o dossiê</a>
+</div>
+
+<script>
+  // Repassa os parâmetros de campanha (utm_*, src, sck) da URL da página para o checkout da Kiwify,
+  // para cada venda aparecer com a origem certa no painel.
+  (function () {
+    var params = new URLSearchParams(location.search);
+    var keep = new URLSearchParams();
+    params.forEach(function (value, key) {
+      if (/^utm_/.test(key) || key === 'src' || key === 'sck') keep.set(key, value);
+    });
+    if (!keep.toString()) return;
+    document.querySelectorAll('a.checkout').forEach(function (a) {
+      var url = new URL(a.href);
+      keep.forEach(function (value, key) { url.searchParams.set(key, value); });
+      a.href = url.toString();
+    });
+  })();
+</script>
+</body>
+</html>
